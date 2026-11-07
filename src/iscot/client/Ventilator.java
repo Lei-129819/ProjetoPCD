@@ -12,12 +12,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import iscot.client.gui.LightIcon;
 import iscot.client.gui.VentilatorIcon;
 import iscot.enums.Areas;
 import iscot.enums.Type;
 
-import iscot.events.AreaTemperatureOrderEvent;
 import iscot.events.RegistrationEvent;
 import iscot.events.AreaVentilationOrderEvent;
 
