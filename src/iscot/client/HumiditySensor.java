@@ -8,6 +8,10 @@ import iscot.client.gui.SensorControl;
 import iscot.enums.Areas;
 import iscot.enums.Type;
 
+
+import iscot.events.RegistrationEvent;
+import iscot.events.HumiditySensorEvent;
+
 public class HumiditySensor {
 
 	/**
@@ -24,10 +28,16 @@ public class HumiditySensor {
 			System.err.println("Invalid arguments!");
 		}
 		else {
+
+			Areas area = Areas.valueOf(args [2]);
+			final String deviceId = "SensorHum" + area.name();
+
 			// TODO connect to the server
 
 			// TODO register with the server
-			Areas area=Areas.valueOf(args[2]);
+
+			RegistrationEvent regEvent = new RegistrationEvent(area,deviceId,Type.SENSOR);
+			System.out.println("A simular envio de registos:" +regEvent);
 			
 
 			JFrame janela = new JFrame("Humidade em "+area);
@@ -41,7 +51,10 @@ public class HumiditySensor {
 				    0, 100, 1, 50,
 				    valor -> {
 				    	// TODO handle change in sensor
-				    	System.out.println("Mudou para:"+valor);
+
+						HumiditySensorEvent event= new HumiditySensorEvent(area,deviceId, valor);
+
+						System.out.println("A transmitir evento: " + event);
 				    });
 			painel.add(sensorControl,BorderLayout.CENTER);
 			janela.setContentPane(painel);
