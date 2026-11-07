@@ -17,6 +17,10 @@ import iscot.client.gui.VentilatorIcon;
 import iscot.enums.Areas;
 import iscot.enums.Type;
 
+import iscot.events.AreaTemperatureOrderEvent;
+import iscot.events.RegistrationEvent;
+import iscot.events.AreaVentilationOrderEvent;
+
 public class Ventilator {
 
 	/**
@@ -38,7 +42,11 @@ public class Ventilator {
 			
 			// TODO register with the server
 			Areas area=Areas.valueOf(args[2]);
-			
+			String deviceId = "AtuadorVent_" + area.name();
+
+			RegistrationEvent regEvent = new RegistrationEvent(area, deviceId,Type.ACTUATOR);
+			System.out.println("A simular envio de registos" + regEvent);
+
 			JFrame janela = new JFrame("Ventilador em "+area);
 			janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -54,13 +62,23 @@ public class Ventilator {
 			janela.setMinimumSize(janela.getSize());
 			janela.pack();
 			janela.setVisible(true);
-			
-			Thread.sleep(5000);
-			ventilator.setAtivo(true);
+
 
 			// TODO: receive and handle messages from server
 			
 			// TODO: for first phase: create an appropriate event hardcoded locally and change the GUI accordingly
+			Thread.sleep(3000);
+
+			AreaVentilationOrderEvent simularEvento = new AreaVentilationOrderEvent(area, deviceId, true);
+			System.out.println("Receção de evento");
+
+			ventilator.setAtivo(simularEvento.isTurnOn());
+
+			Thread.sleep(3000);
+			AreaVentilationOrderEvent simularEvento2 = new AreaVentilationOrderEvent(area, deviceId, false);
+			System.out.println("A desligar");
+			ventilator.setAtivo(simularEvento2.isTurnOn());
+
 		}
 	}
 }
