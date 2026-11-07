@@ -37,4 +37,6 @@ public abstract class Event implements Serializable {
     public String toString() {
         return "Area: " + area + " | DeviceID: " + deviceId;
     }
+
+    //aaaaaaaa nova
 }
