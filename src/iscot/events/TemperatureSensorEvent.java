@@ -2,7 +2,7 @@ package iscot.events;
 import iscot.enums.Areas;
 public class TemperatureSensorEvent extends SensorEvent{
 
-    public TemperatureSensorEvent(Areas area, String deviceId, float Reading){
+    public TemperatureSensorEvent(Areas area, String deviceId, double Reading){
         super(area, deviceId, Reading);
     }
 

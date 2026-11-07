@@ -3,7 +3,7 @@ import iscot.enums.Areas;
 
 public class GroundMoistureSensorEvent extends SensorEvent{
 
-    public GroundMoistureSensorEvent(Areas area, String deviceId, float Reading){
+    public GroundMoistureSensorEvent(Areas area, String deviceId, double Reading){
         super(area, deviceId, Reading);
     }
 

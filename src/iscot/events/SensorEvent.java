@@ -2,14 +2,14 @@ package iscot.events;
 import iscot.enums.Areas;
 
 public class SensorEvent extends Event {
-    private float reading;
+    private double reading;
 
-    public SensorEvent(Areas area, String deviceId, float reading) {
+    public SensorEvent(Areas area, String deviceId, double reading) {
         super(area, deviceId);
         this.reading=reading;
     }
 
-    public float getReading() {
+    public double getReading() {
         return reading;
     }
 

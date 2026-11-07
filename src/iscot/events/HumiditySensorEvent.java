@@ -3,7 +3,7 @@ import iscot.client.HumiditySensor;
 import iscot.enums.Areas;
 public class HumiditySensorEvent extends SensorEvent{
 
-    public HumiditySensorEvent(Areas area, String deviceId, float reading){
+    public HumiditySensorEvent(Areas area, String deviceId, double reading){
         super(area,deviceId,reading);
     }
 
