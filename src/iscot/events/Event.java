@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * Classe base de topo para todos os eventos do sistema IscoT.
  */
-public abstract class Event {
+public abstract class Event implements Serializable {
     
     private Areas area;
     private String deviceId;

@@ -1,6 +1,9 @@
 package iscot.client;
 
 import java.awt.BorderLayout;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import iscot.client.gui.LightIcon;
@@ -24,46 +27,56 @@ public class HumiditySensor {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws NumberFormatException, InterruptedException {
-		if(args.length!=3) {
+		if (args.length != 3) {
 			System.err.println("Invalid arguments!");
-		}
-		else {
-
-			Areas area = Areas.valueOf(args [2]);
+		} else {
+			String host = args[0];
+			int port = Integer.parseInt(args[1]);
+			Areas area = Areas.valueOf(args[2]);
 			final String deviceId = "SensorHum" + area.name();
 
-			// TODO connect to the server
+			try {
+				Socket socket = new Socket(host, port);
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				System.out.println("[Sensor] Ligado com sucesso ao servidor em " + host + ":" + port);
 
-			// TODO register with the server
+				RegistrationEvent regEvent = new RegistrationEvent(area, deviceId, Type.SENSOR);
+				out.writeObject(regEvent);
+				out.flush();
+				System.out.println("Registo enviado em" + area);
 
-			RegistrationEvent regEvent = new RegistrationEvent(area,deviceId,Type.SENSOR);
-			System.out.println("A simular envio de registos:" +regEvent);
-			
+				JFrame janela = new JFrame("Humidade em " + area);
+				janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-			JFrame janela = new JFrame("Humidade em "+area);
-			janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-			
-			// Criar os componentes gráficos
-			JPanel painel=new JPanel();
-			painel.setLayout(new BorderLayout());
-			SensorControl sensorControl= new SensorControl( "☀", "Humidade - "+area, "%",
-				    0, 100, 1, 50,
-				    valor -> {
-				    	// TODO handle change in sensor
+				// Criar os componentes gráficos
+				JPanel painel = new JPanel();
+				painel.setLayout(new BorderLayout());
+				SensorControl sensorControl = new SensorControl("☀", "Humidade - " + area, "%",
+						0, 100, 1, 50,
+						valor -> {
 
-						HumiditySensorEvent event= new HumiditySensorEvent(area,deviceId, valor);
+						try{
+							HumiditySensorEvent event = new HumiditySensorEvent(area, deviceId, valor);
 
-						System.out.println("A transmitir evento: " + event);
-				    });
-			painel.add(sensorControl,BorderLayout.CENTER);
-			janela.setContentPane(painel);
-			janela.setLocation(600, 400);
-			janela.setMinimumSize(janela.getSize());
-			janela.pack();
-			janela.setVisible(true);
-			
+							out.writeObject(event);
+							out.flush();
+							System.out.println("Evento enviado" + event );
+						} catch (IOException e) {
+							System.err.println("[Erro] Falha ao enviar evento pelo socket: " + e.getMessage());
+							}
+
+						});
+				painel.add(sensorControl, BorderLayout.CENTER);
+				janela.setContentPane(painel);
+				janela.setLocation(600, 400);
+				janela.setMinimumSize(janela.getSize());
+				janela.pack();
+				janela.setVisible(true);
+
+			} catch (IOException e){
+				System.err.println("[Erro crítico] Não foi possível ligar ao servidor: " + e.getMessage());
+			}
 		}
 	}
-
 }
