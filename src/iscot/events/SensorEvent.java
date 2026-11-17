@@ -1,7 +1,9 @@
 package iscot.events;
 import iscot.enums.Areas;
 
-public class SensorEvent extends Event {
+import java.io.Serializable;
+
+public class SensorEvent extends Event implements Serializable {
     private double reading;
 
     public SensorEvent(Areas area, String deviceId, double reading) {
