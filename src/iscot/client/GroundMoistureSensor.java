@@ -35,7 +35,7 @@ public class GroundMoistureSensor {
 
             // TODO register with the server
 
-            RegistrationEvent regEvent = new RegistrationEvent(area,deviceId,Type.SENSOR);
+            RegistrationEvent regEvent = new RegistrationEvent(area,Type.SENSOR);
             System.out.println("A simular envio de registos:" +regEvent);
 
 

@@ -42,7 +42,7 @@ public class Rega {
             Areas area=Areas.valueOf(args[2]);
             String deviceId = "Rega" + area.name();
 
-            RegistrationEvent regEvent = new RegistrationEvent(area, deviceId,Type.ACTUATOR);
+            RegistrationEvent regEvent = new RegistrationEvent(area,Type.ACTUATOR);
             System.out.println("A simular envio de registos" + regEvent);
 
             JFrame janela = new JFrame("Rega em "+area);
