@@ -8,15 +8,18 @@ import iscot.enums.Areas;
 import iscot.enums.Type;
 import iscot.events.Event;
 import iscot.events.RegistrationEvent;
+import iscot.events.RegistrationResponse;
 
 public class ClientHandle implements Runnable {
     private Socket socket;
-    private String deviceId;
+    private DeviceIdGenerator idGenerator;
     private Areas area;
+    private String deviceId;
     private Type type;
 
-    public ClientHandle(Socket socket) {
+    public ClientHandle(Socket socket, DeviceIdGenerator idGenerator) {
         this.socket = socket;
+        this.idGenerator = idGenerator;
     }
 
 @Override
@@ -28,9 +31,19 @@ public void run() {
 
         if (firstMessage instanceof RegistrationEvent) {
             RegistrationEvent reg = (RegistrationEvent) firstMessage;
-            this.deviceId = reg.getDeviceId();
             this.area = reg.getArea();
             this.type = reg.getDeviceType();
+
+            if (type==null || type== Type.DWC){
+                System.out.println("[Registo Recusado] Tipo inválido: "+ type);
+                out.writeObject(new RegistrationResponse(false, null));
+                out.flush();
+                return;
+            }
+
+            this.deviceId = idGenerator.generate(type,area);
+            out.writeObject(new RegistrationResponse(true,deviceId));
+            out.flush();
 
             System.out.println("[Registo Sucesso] Dispositivo registado: " + deviceId +
                     " | Tipo: " + type + " | Área: " + area);

@@ -8,9 +8,9 @@ import java.io.Serializable;
 public class RegistrationEvent extends Event implements Serializable {
     private Type deviceType;
 
-    public RegistrationEvent(Areas area, String deviceId, Type deviceType){
-        super(area, deviceId);
-        this.deviceType= deviceType;
+    public RegistrationEvent(Areas area, Type type){
+        super(area, null);
+        this.deviceType = type;
     }
 
     public Type getDeviceType() {

@@ -2,6 +2,7 @@ package iscot.client;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javax.swing.JFrame;
@@ -14,6 +15,7 @@ import iscot.enums.Type;
 
 import iscot.events.RegistrationEvent;
 import iscot.events.HumiditySensorEvent;
+import iscot.events.RegistrationResponse;
 
 public class HumiditySensor {
 
@@ -33,19 +35,28 @@ public class HumiditySensor {
 			String host = args[0];
 			int port = Integer.parseInt(args[1]);
 			Areas area = Areas.valueOf(args[2]);
-			final String deviceId = "SensorHum" + area.name();
-
 			try {
 				Socket socket = new Socket(host, port);
 				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
 				System.out.println("[Sensor] Ligado com sucesso ao servidor em " + host + ":" + port);
 
-				RegistrationEvent regEvent = new RegistrationEvent(area, deviceId, Type.SENSOR);
+				RegistrationEvent regEvent = new RegistrationEvent(area, Type.SENSOR);
 				out.writeObject(regEvent);
 				out.flush();
-				System.out.println("Registo enviado em" + area);
 
-				JFrame janela = new JFrame("Humidade em " + area);
+				RegistrationResponse resp = (RegistrationResponse) in.readObject();
+				if(!resp.isAccepted()){
+					System.err.println("[Sensor] Registo recusado pelo Servidor");
+					socket.close();
+					return;
+				}
+
+				final String deviceId = resp.getDeviceId();
+				System.out.println("[Sensor] Registado com id:" + deviceId);
+
+				JFrame janela = new JFrame("Humidade em " + area + " (" + deviceId + ")");
 				janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 
@@ -57,7 +68,7 @@ public class HumiditySensor {
 						valor -> {
 
 						try{
-							HumiditySensorEvent event = new HumiditySensorEvent(area, deviceId, valor);
+							HumiditySensorEvent event = new HumiditySensorEvent(area,deviceId, valor);
 
 							out.writeObject(event);
 							out.flush();
@@ -74,8 +85,8 @@ public class HumiditySensor {
 				janela.pack();
 				janela.setVisible(true);
 
-			} catch (IOException e){
-				System.err.println("[Erro crítico] Não foi possível ligar ao servidor: " + e.getMessage());
+			} catch (IOException | ClassNotFoundException e){
+				System.err.println("[Erro crítico] Não foi possível ligar/registar ao servidor: " + e.getMessage());
 			}
 		}
 	}
